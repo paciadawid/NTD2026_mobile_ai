@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Install uv (includes Python 3.13)
-        uses: astral-sh/setup-uv@v8
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           python-version: "3.13"
 
