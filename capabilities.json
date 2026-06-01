@@ -1,9 +1,0 @@
-{
-  "platformName": "Android",
-  "appium:automationName": "UiAutomator2",
-  "appium:deviceName": "emulator-5554",
-  "appium:platformVersion": "16",
-  "appium:appPackage": "com.google.android.calculator",
-  "appium:appActivity": "com.android.calculator2.Calculator",
-  "appium:noReset": true
-}

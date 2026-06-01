@@ -1,13 +1,63 @@
-name: Calculator Tests
+name: Mobile Tests
 
 on:
   push:
   workflow_dispatch:
 
 jobs:
+  # ── Upload apps to BrowserStack (idempotent: skip if custom_id already exists) ──
+  upload-apps:
+    name: Upload apps to BrowserStack (if missing)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload Calculator APK (if missing)
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+        run: |
+          CUSTOM_ID="GoogleCalculator"
+          RESPONSE=$(curl -s -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
+            "https://api-cloud.browserstack.com/app-automate/recent_apps/$CUSTOM_ID")
+          COUNT=$(echo "$RESPONSE" | jq 'if type == "array" then length else 0 end')
+          if [ "$COUNT" -gt 0 ]; then
+            echo "✅ $CUSTOM_ID already on BrowserStack – skipping upload"
+          else
+            echo "⬆️  Uploading app/calculator.apk as $CUSTOM_ID …"
+            curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
+              -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+              -F "file=@app/calculator.apk" \
+              -F "custom_id=$CUSTOM_ID"
+            echo ""
+          fi
+
+      - name: Upload MDA APK (if missing)
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+        run: |
+          CUSTOM_ID="SauceLabs_MDA"
+          RESPONSE=$(curl -s -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
+            "https://api-cloud.browserstack.com/app-automate/recent_apps/$CUSTOM_ID")
+          COUNT=$(echo "$RESPONSE" | jq 'if type == "array" then length else 0 end')
+          if [ "$COUNT" -gt 0 ]; then
+            echo "✅ $CUSTOM_ID already on BrowserStack – skipping upload"
+          else
+            echo "⬆️  Uploading app/mda-2.2.0-25.apk as $CUSTOM_ID …"
+            curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
+              -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+              -F "file=@app/mda-2.2.0-25.apk" \
+              -F "custom_id=$CUSTOM_ID"
+            echo ""
+          fi
+
+  # ── Run smoke tests, then generate and publish the Allure report ──────────────
   test-browserstack:
     name: BrowserStack – Google Pixel 10 (Android 16)
     runs-on: ubuntu-latest
+    needs: upload-apps
 
     steps:
       - uses: actions/checkout@v4
@@ -27,3 +77,23 @@ jobs:
           BS_TARGET: "1"
           BS_SESSION_NAME: "commit-${{ github.sha }}"
         run: uv run pytest tests/ -v -m smoke
+
+      - name: Install Allure CLI
+        if: always()
+        run: |
+          curl -o allure.tgz -sL \
+            https://github.com/allure-framework/allure2/releases/download/2.30.0/allure-2.30.0.tgz
+          tar -xzf allure.tgz
+          echo "$PWD/allure-2.30.0/bin" >> "$GITHUB_PATH"
+
+      - name: Generate Allure report
+        if: always()
+        run: allure generate reports/allure-results --clean -o reports/allure-report
+
+      - name: Upload Allure report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-${{ github.sha }}
+          path: reports/allure-report
+          retention-days: 30

@@ -3,6 +3,7 @@ name = "ntd2026-mobile-ai"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
+    "allure-pytest>=2.16.0",
     "appium-python-client>=5.3.1",
     "pytest>=8.4.2",
     "python-dotenv>=1.2.2",
@@ -10,7 +11,7 @@ dependencies = [
 
 [tool.ruff]
 line-length = 120
-target-version = "py314"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "S", "B", "A", "C4", "PT", "SIM", "RUF"]
@@ -18,6 +19,7 @@ ignore = ["S101"]  # allow assert in tests
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--alluredir=reports/allure-results --clean-alluredir"
 markers = [
     "smoke: critical path tests — run on every push",
 ]

@@ -1,10 +1,7 @@
 import pytest
 
-from pages.calculator_page import CalculatorPage
-
 
 @pytest.mark.smoke
-def test_two_plus_two_equals_four(driver) -> None:
-    calc = CalculatorPage(driver)
-    calc.clear().digit(2).add().digit(2).equals()
-    assert calc.result() == "4"
+def test_two_plus_two_equals_four(calculator_page) -> None:
+    calculator_page.clear().digit(2).add().digit(2).equals()
+    assert calculator_page.result() == "4"

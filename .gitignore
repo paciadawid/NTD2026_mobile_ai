@@ -87,11 +87,9 @@ test-results/
 test-reports/
 allure-results/
 allure-report/
-# APKs live in app/ locally but are not committed (upload to BrowserStack via curl)
-app/
-*.apk
+# app/*.apk and app/*.ipa are committed so CI can upload them to BrowserStack when missing.
+# Keep *.aab out of git (Android App Bundles are for store submission, not testing).
 *.aab
-*.ipa
 
 # --- Node (for Mobile MCP runs via npx, just in case) ---
 node_modules/
