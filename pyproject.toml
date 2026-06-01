@@ -22,6 +22,7 @@ testpaths = ["tests"]
 addopts = "--alluredir=reports/allure-results --clean-alluredir"
 markers = [
     "smoke: critical path tests — run on every push",
+    "local: tests that require a local device/emulator; skipped in CI",
 ]
 
 [dependency-groups]

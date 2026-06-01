@@ -1,8 +1,10 @@
 """
-Smoke tests for Sauce Labs My Demo App — shopping flow.
+Local smoke tests for Sauce Labs My Demo App — shopping flow.
 
-Run locally:     uv run pytest tests/test_shop.py -v
-Run on BS:       BS_TARGET=1 uv run pytest tests/test_shop.py -v
+BrowserStack blocks uploads of the Sauce Labs demo app (competitor policy).
+This test is marked @local so it is excluded from CI (-m "smoke and not local").
+
+Run locally:  uv run pytest tests/test_shop.py -v
 """
 
 import pytest
@@ -12,6 +14,7 @@ YELLOW_BACKPACK = "Sauce Labs Backpack (yellow)"
 
 
 @pytest.mark.smoke
+@pytest.mark.local
 def test_yellow_backpack_qty2_correct_total(product_list_page):
     """Add 2 units of the yellow backpack to the cart and verify the total price."""
     detail = product_list_page.open_product_by_name(YELLOW_BACKPACK)

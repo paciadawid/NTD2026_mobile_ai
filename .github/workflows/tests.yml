@@ -5,7 +5,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ── Upload apps to BrowserStack (always upload to guarantee fresh binaries) ────
+  # ── Upload apps to BrowserStack ───────────────────────────────────────────────
+  # NOTE: BrowserStack blocks uploads of the Sauce Labs My Demo App (competitor
+  # policy — BROWSERSTACK_UNPROCESSABLE_ENTITY for all v1.x and v2.x releases).
+  # The shop test is therefore marked @local and excluded from CI.
+  # Only the Google Calculator APK is uploaded here (pre-installed on Pixel
+  # devices, but we upload the pinned version for reproducibility).
   upload-apps:
     name: Upload apps to BrowserStack
     runs-on: ubuntu-latest
@@ -27,21 +32,6 @@ jobs:
           echo "HTTP $HTTP_STATUS — $(cat /tmp/bs_calc.json)"
           [[ "$HTTP_STATUS" -ge 200 && "$HTTP_STATUS" -lt 300 ]] || exit 1
           jq -e '.app_url' /tmp/bs_calc.json > /dev/null
-
-      - name: Upload MDA APK
-        env:
-          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-        run: |
-          echo "⬆️  Uploading app/mda-2.2.0-25.apk as SauceLabs_MDA …"
-          HTTP_STATUS=$(curl -s -o /tmp/bs_mda.json -w "%{http_code}" \
-            -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
-            -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
-            -F "file=@app/mda-2.2.0-25.apk" \
-            -F "custom_id=SauceLabs_MDA")
-          echo "HTTP $HTTP_STATUS — $(cat /tmp/bs_mda.json)"
-          [[ "$HTTP_STATUS" -ge 200 && "$HTTP_STATUS" -lt 300 ]] || exit 1
-          jq -e '.app_url' /tmp/bs_mda.json > /dev/null
 
   # ── Run smoke tests, then generate and publish the Allure report ──────────────
   test-browserstack:
@@ -66,7 +56,7 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           BS_TARGET: "1"
           BS_SESSION_NAME: "commit-${{ github.sha }}"
-        run: uv run pytest tests/ -v -m smoke
+        run: uv run pytest tests/ -v -m "smoke and not local"
 
       - name: Install Allure CLI
         if: always()
