@@ -51,8 +51,12 @@ nosetests.xml
 *.iws
 *.ipr
 
-# --- VS Code ---
+# --- VS Code / Cursor ---
 .vscode/
+.cursor/
+
+# --- MCP local config (may contain credentials) ---
+.mcp.json
 
 # --- macOS ---
 .DS_Store
@@ -83,6 +87,8 @@ test-results/
 test-reports/
 allure-results/
 allure-report/
+# APKs live in app/ locally but are not committed (upload to BrowserStack via curl)
+app/
 *.apk
 *.aab
 *.ipa

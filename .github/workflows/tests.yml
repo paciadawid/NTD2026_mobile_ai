@@ -1,0 +1,29 @@
+name: Calculator Tests
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test-browserstack:
+    name: BrowserStack – Google Pixel 10 (Android 16)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv (includes Python 3.13)
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run tests on BrowserStack
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          BS_TARGET: "1"
+          BS_SESSION_NAME: "commit-${{ github.sha }}"
+        run: uv run pytest tests/ -v -m smoke
