@@ -16,7 +16,7 @@
 4. **Android Studio** (latest) + emulator with **Android 16 / API 36** (with `ANDROID_HOME`)
 5. **Appium 3** (latest) + **UiAutomator2** driver (latest)
 6. **Appium Inspector** (latest)
-7. **AI plugin for PyCharm** — **GitHub Copilot** (recommended) or any other AI assistant you already use
+7. **AI assistant (MCP-capable)** — recommended: plug your agent (Cursor, Claude, Codex, …) into **PyCharm's AI Chat via ACP** (no JetBrains AI subscription needed). GitHub Copilot also works, but new paid sign-ups remain unavailable (see step 7).
 
 > **Mobile MCP** ([mobile-next/mobile-mcp](https://github.com/mobile-next/mobile-mcp) — an MCP server that lets AI tools drive Android/iOS apps) does **not** need to be installed upfront — we'll wire it into your IDE together during the workshop. Just make sure Node.js (step 2) is installed (Mobile MCP runs via `npx`) and your AI plugin (step 7) supports MCP.
 
@@ -145,33 +145,40 @@ We'll use it during the workshop to compare "classic" element inspection vs. AI-
 
 ---
 
-## 7. AI plugin for PyCharm — pick ONE
+## 7. AI assistant (MCP-capable) — pick ONE
 
-We'll use AI to drive Mobile MCP — either through a PyCharm plugin or a separate AI tool that runs alongside PyCharm. Pick one of the options below. **Do not configure Mobile MCP yet** — we'll do that together.
+We'll use AI to drive Mobile MCP, so the one hard requirement is that your AI tool can **talk to an MCP server**. The good news: you almost never need to leave PyCharm. Modern JetBrains IDEs ship a unified **AI Chat**, and via the **Agent Client Protocol (ACP)** it can host external agents — so even "Cursor" or "Claude" run *inside* PyCharm. Pick one of the options below. **Do not configure Mobile MCP yet** — we'll do that together.
 
-### Option A (recommended) — GitHub Copilot
+### Option A (recommended) — PyCharm AI Chat + an ACP agent
 
-> Heads-up: GitHub paused new sign-ups for **Copilot Pro / Pro+ / Student** in late April 2026. **Copilot Free** is open for new accounts. Paid sign-ups reopen **June 1, 2026** under a new usage-based (AI Credits) billing model — if you're reading this after June 1, Pro is available again.
+Instead of installing a separate AI editor, plug your agent straight into PyCharm's **AI Chat** tool window using the **Agent Client Protocol (ACP)** — same idea as LSP, but for AI agents.
+
+1. Make sure PyCharm is **2025.3 or newer** (that's where ACP support landed).
+2. Open **AI Chat** → the **Agents** dropdown → **Install From ACP Registry…** and pick an agent. Registry agents need no extra setup; custom ones use an `acp.json` file.
+3. Agents currently in the registry include **Claude Agent**, **Codex**, **Cursor**, **Auggie CLI**, and **Junie** — with more being added.
+4. **Log in** to the agent and confirm a quick *"Say hello"* works.
+
+Notes:
+- **No paid JetBrains AI subscription is required** — each agent brings its own account/plan (e.g. Cursor ACP is free for users on a paid Cursor plan; just sign in with your existing Cursor account).
+- **If you want to buy one plan for the workshop**, a **Cursor Pro** or **Claude Pro** subscription (both ~$20/month) is a solid choice — each gives you a capable agent that plugs into AI Chat via ACP, without hitting the tight free-tier caps. (Both offer monthly billing, so you can cancel afterward.)
+- These agents support **MCP servers**, which is exactly what Mobile MCP needs — we'll wire that in together during the workshop.
+- Refs: JetBrains ACP docs → https://www.jetbrains.com/help/ai-assistant/acp.html · Cursor in JetBrains IDEs → https://cursor.com/blog/jetbrains-acp
+
+> Prefer a different setup? A PyCharm plugin with its own MCP support (**JetBrains AI Assistant**, **Tabnine** 5.26+, **Continue**) works too, as does a standalone editor (the **Cursor** or **Windsurf** app, or **VS Code** + **Cline**/**Continue**) — the Python/Appium/pytest stack is identical. The workshop is demoed in PyCharm, so the AI Chat + ACP route keeps you on the same screen as everyone else. Stick to **one** tool to avoid keymap/completion conflicts.
+
+### Option B — GitHub Copilot
+
+> ⚠️ **Heads-up (as of June 1, 2026): new paid Copilot sign-ups are still unavailable.** GitHub paused new sign-ups for **Copilot Pro / Pro+ / Student** in late April 2026, and the planned June 1 reopening under the new usage-based (AI Credits) billing model has **not** gone live yet. Only **Copilot Free** is currently open for new accounts. If you don't already have a paid Copilot plan, prefer Option A.
 >
-> ⚠️ **Copilot Free is limited**: only a small subset of models is available (e.g. Haiku 4.5, GPT-5 mini), with **~50 agent/chat requests per month** and **~2,000 code completions per month**. That's enough to get a feel for the workshop, but you'll likely hit the cap if you experiment heavily. If you can, upgrade to **Pro** for more requests and access to stronger models.
+> ⚠️ **Copilot Free is limited**: only a small subset of models is available (e.g. Haiku 4.5, GPT-5 mini), with **~50 agent/chat requests per month** and **~2,000 code completions per month**. That's enough to get a feel for the workshop, but you'll likely hit the cap if you experiment heavily.
+
+If you already have a working Copilot setup (or want to try Copilot Free):
 
 1. Sign in / create a **GitHub account** → https://github.com.
 2. Enable **Copilot Free** → https://github.com/features/copilot (click **"Get started"** and follow the Free flow).
 3. In PyCharm: **Settings → Plugins → Marketplace → "GitHub Copilot" → Install → Restart**.
 4. Sign in via the **Copilot icon in the status bar** (bottom-right) — or **Tools → GitHub Copilot → Login to GitHub** in older plugin versions.
 5. Open the **Copilot Chat** tool window and confirm chat works (e.g. ask *"Say hello"*).
-
-### Option B — Any other AI assistant you already use
-
-If you already have a paid/working setup with another AI tool that **supports MCP servers** — feel free to use it. Confirmed MCP-capable tools include **JetBrains AI Assistant** (recent versions), **Cursor**, **Windsurf** (Cascade), **Tabnine** (5.26+), **Cline**, and **Continue**. **Claude Code** also supports MCP, but it runs as a terminal CLI alongside PyCharm rather than as a PyCharm plugin — the integration model is different but works fine for the workshop. Always double-check your tool's current docs, as MCP support has been moving fast.
-
-Just make sure **before the workshop**:
-
-1. The plugin/extension is **installed in PyCharm** (or runs alongside it).
-2. You're **logged in** and chat / inline completions work.
-3. You know where MCP servers are configured in its settings — we'll wire Mobile MCP in during the workshop.
-
-> Stick to one tool — installing multiple AI plugins side-by-side often causes keymap conflicts and confusing completions.
 
 ---
 
@@ -218,7 +225,7 @@ Plus:
 - [ ] `appium driver doctor uiautomator2` is fully green.
 - [ ] Appium Inspector opens.
 - [ ] PyCharm is installed (free tier active).
-- [ ] GitHub Copilot (or your preferred AI assistant) is installed in PyCharm, signed in, and chat works.
+- [ ] An MCP-capable AI assistant (an ACP agent in PyCharm's AI Chat, or GitHub Copilot) is installed, signed in, and chat works.
 
 If **all** boxes are ticked — you're ready. 🎉
 
