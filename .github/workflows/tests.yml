@@ -19,13 +19,14 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
         run: |
           echo "⬆️  Uploading app/calculator.apk as GoogleCalculator …"
-          RESPONSE=$(curl --fail-with-body -s \
+          HTTP_STATUS=$(curl -s -o /tmp/bs_calc.json -w "%{http_code}" \
             -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
             -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
             -F "file=@app/calculator.apk" \
             -F "custom_id=GoogleCalculator")
-          echo "$RESPONSE"
-          echo "$RESPONSE" | jq -e '.app_url' > /dev/null
+          echo "HTTP $HTTP_STATUS — $(cat /tmp/bs_calc.json)"
+          [[ "$HTTP_STATUS" -ge 200 && "$HTTP_STATUS" -lt 300 ]] || exit 1
+          jq -e '.app_url' /tmp/bs_calc.json > /dev/null
 
       - name: Upload MDA APK
         env:
@@ -33,13 +34,14 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
         run: |
           echo "⬆️  Uploading app/mda-2.2.0-25.apk as SauceLabs_MDA …"
-          RESPONSE=$(curl --fail-with-body -s \
+          HTTP_STATUS=$(curl -s -o /tmp/bs_mda.json -w "%{http_code}" \
             -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
             -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
             -F "file=@app/mda-2.2.0-25.apk" \
             -F "custom_id=SauceLabs_MDA")
-          echo "$RESPONSE"
-          echo "$RESPONSE" | jq -e '.app_url' > /dev/null
+          echo "HTTP $HTTP_STATUS — $(cat /tmp/bs_mda.json)"
+          [[ "$HTTP_STATUS" -ge 200 && "$HTTP_STATUS" -lt 300 ]] || exit 1
+          jq -e '.app_url' /tmp/bs_mda.json > /dev/null
 
   # ── Run smoke tests, then generate and publish the Allure report ──────────────
   test-browserstack:
