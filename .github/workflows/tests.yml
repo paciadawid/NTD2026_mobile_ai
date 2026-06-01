@@ -5,53 +5,41 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ── Upload apps to BrowserStack (idempotent: skip if custom_id already exists) ──
+  # ── Upload apps to BrowserStack (always upload to guarantee fresh binaries) ────
   upload-apps:
-    name: Upload apps to BrowserStack (if missing)
+    name: Upload apps to BrowserStack
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Upload Calculator APK (if missing)
+      - name: Upload Calculator APK
         env:
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
         run: |
-          CUSTOM_ID="GoogleCalculator"
-          RESPONSE=$(curl -s -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
-            "https://api-cloud.browserstack.com/app-automate/recent_apps/$CUSTOM_ID")
-          COUNT=$(echo "$RESPONSE" | jq 'if type == "array" then length else 0 end')
-          if [ "$COUNT" -gt 0 ]; then
-            echo "✅ $CUSTOM_ID already on BrowserStack – skipping upload"
-          else
-            echo "⬆️  Uploading app/calculator.apk as $CUSTOM_ID …"
-            curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
-              -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
-              -F "file=@app/calculator.apk" \
-              -F "custom_id=$CUSTOM_ID"
-            echo ""
-          fi
+          echo "⬆️  Uploading app/calculator.apk as GoogleCalculator …"
+          RESPONSE=$(curl --fail-with-body -s \
+            -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
+            -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+            -F "file=@app/calculator.apk" \
+            -F "custom_id=GoogleCalculator")
+          echo "$RESPONSE"
+          echo "$RESPONSE" | jq -e '.app_url' > /dev/null
 
-      - name: Upload MDA APK (if missing)
+      - name: Upload MDA APK
         env:
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
         run: |
-          CUSTOM_ID="SauceLabs_MDA"
-          RESPONSE=$(curl -s -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
-            "https://api-cloud.browserstack.com/app-automate/recent_apps/$CUSTOM_ID")
-          COUNT=$(echo "$RESPONSE" | jq 'if type == "array" then length else 0 end')
-          if [ "$COUNT" -gt 0 ]; then
-            echo "✅ $CUSTOM_ID already on BrowserStack – skipping upload"
-          else
-            echo "⬆️  Uploading app/mda-2.2.0-25.apk as $CUSTOM_ID …"
-            curl -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
-              -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
-              -F "file=@app/mda-2.2.0-25.apk" \
-              -F "custom_id=$CUSTOM_ID"
-            echo ""
-          fi
+          echo "⬆️  Uploading app/mda-2.2.0-25.apk as SauceLabs_MDA …"
+          RESPONSE=$(curl --fail-with-body -s \
+            -u "$BROWSERSTACK_USERNAME:$BROWSERSTACK_ACCESS_KEY" \
+            -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+            -F "file=@app/mda-2.2.0-25.apk" \
+            -F "custom_id=SauceLabs_MDA")
+          echo "$RESPONSE"
+          echo "$RESPONSE" | jq -e '.app_url' > /dev/null
 
   # ── Run smoke tests, then generate and publish the Allure report ──────────────
   test-browserstack:
@@ -60,10 +48,10 @@ jobs:
     needs: upload-apps
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install uv (includes Python 3.13)
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v8
         with:
           python-version: "3.13"
 
@@ -92,7 +80,7 @@ jobs:
 
       - name: Upload Allure report artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: allure-report-${{ github.sha }}
           path: reports/allure-report
