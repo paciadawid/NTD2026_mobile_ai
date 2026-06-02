@@ -116,8 +116,14 @@ def driver():
     """Appium WebDriver for Google Calculator.
 
     Set BS_TARGET=1 to run on BrowserStack instead of a local emulator.
+
+    no_reset=False on BrowserStack ensures our uploaded APK is installed rather than
+    the pre-installed system Calculator (which on Android 16 has a different activity structure).
+    Locally, no_reset=True keeps the app state between runs for faster iteration.
     """
-    d = _make_driver(CALC_PACKAGE, CALC_ACTIVITY, CALC_BS_APP_ID, CALC_BS_BUILD, "Calculator Test Run")
+    use_bs = os.environ.get("BS_TARGET", "").lower() in ("1", "true", "yes")
+    d = _make_driver(CALC_PACKAGE, CALC_ACTIVITY, CALC_BS_APP_ID, CALC_BS_BUILD, "Calculator Test Run",
+                     no_reset=not use_bs)
     yield d
     d.quit()
 
