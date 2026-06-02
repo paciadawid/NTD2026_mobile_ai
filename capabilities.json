@@ -1,0 +1,18 @@
+{
+  "android": {
+    "platformName": "Android",
+    "appium:platformVersion": "16",
+    "appium:deviceName": "emulator-5554",
+    "appium:udid": "emulator-5554",
+    "appium:automationName": "UiAutomator2",
+    "appium:app": "/Users/dawidpacia/PycharmProjects/NTD2026_mobile_ai/app/ryanair-3-230-0.apk",
+    "appium:appPackage": "com.ryanair.cheapflights",
+    "appium:appActivity": "com.ryanair.cheapflights.ui.SplashScreenActivity",
+    "appium:noReset": false,
+    "appium:fullReset": false,
+    "appium:autoGrantPermissions": true,
+    "appium:newCommandTimeout": 300
+  },
+  "ios": {},
+  "general": {}
+}

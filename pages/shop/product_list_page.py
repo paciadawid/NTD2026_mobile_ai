@@ -7,7 +7,7 @@ from appium.webdriver.common.appiumby import AppiumBy
 from pages.base_page import BasePage
 
 if TYPE_CHECKING:
-    from pages.product_detail_page import ProductDetailPage
+    from pages.shop.product_detail_page import ProductDetailPage
 
 # ── Resource IDs ──────────────────────────────────────────────────────────────
 # Appium prepends appPackage automatically for AppiumBy.ID short IDs.
@@ -21,7 +21,7 @@ class ProductListPage(BasePage):
 
     def open_product_by_name(self, name: str) -> ProductDetailPage:
         """Scroll to the product with the given title and open its detail page."""
-        from pages.product_detail_page import ProductDetailPage
+        from pages.shop.product_detail_page import ProductDetailPage
 
         self._find(_ID_PRODUCT_LIST)
 

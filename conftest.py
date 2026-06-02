@@ -32,6 +32,12 @@ MDA_ACTIVITY = "com.saucelabs.mydemoapp.android.view.activities.SplashActivity"
 MDA_BS_APP_ID = "SauceLabs_MDA"  # custom_id — upload app/mda-2.2.0-25.apk to BrowserStack first
 MDA_BS_BUILD = "Shop Tests"
 
+# ── Ryanair ───────────────────────────────────────────────────────────────────
+RYANAIR_PACKAGE = "com.ryanair.cheapflights"
+RYANAIR_ACTIVITY = "com.ryanair.cheapflights.ui.SplashScreenActivity"
+RYANAIR_BS_APP_ID = "Ryanair"  # custom_id — upload the Ryanair APK to BrowserStack first
+RYANAIR_BS_BUILD = "Ryanair Flight Search Tests"
+
 
 def _local_options(package: str, activity: str, *, no_reset: bool = True) -> UiAutomator2Options:
     options = UiAutomator2Options()
@@ -134,7 +140,7 @@ def driver_mda():
 @pytest.fixture
 def product_list_page(driver_mda):
     """Ready-to-use ProductListPage bound to the MDA driver."""
-    from pages.product_list_page import ProductListPage
+    from pages.shop.product_list_page import ProductListPage
 
     return ProductListPage(driver_mda)
 
@@ -146,25 +152,115 @@ def calculator_page(driver):
     Clears the calculator before each test so module-scoped driver state never
     leaks between tests.
     """
-    from pages.calculator_page import CalculatorPage
+    from pages.calculator.calculator_page import CalculatorPage
 
     page = CalculatorPage(driver)
     page.clear()
     return page
 
 
+@pytest.fixture
+def driver_ryanair():
+    """Appium WebDriver for the Ryanair app.
+
+    Function-scoped with no_reset=False so every test starts from a clean app state
+    (privacy screen, fresh session — no cached login or promo dismissal).
+
+    Set BS_TARGET=1 to run on BrowserStack instead of a local emulator.
+    """
+    d = _make_driver(
+        RYANAIR_PACKAGE,
+        RYANAIR_ACTIVITY,
+        RYANAIR_BS_APP_ID,
+        RYANAIR_BS_BUILD,
+        "Ryanair Flight Search",
+        no_reset=False,
+    )
+    yield d
+    d.quit()
+
+
+# ── Ryanair page fixtures ─────────────────────────────────────────────────────
+
+@pytest.fixture
+def privacy_page(driver_ryanair):
+    from pages.ryanair.privacy_page import PrivacyPage
+    return PrivacyPage(driver_ryanair)
+
+
+@pytest.fixture
+def login_page(driver_ryanair):
+    from pages.ryanair.login_page import LoginPage
+    return LoginPage(driver_ryanair)
+
+
+@pytest.fixture
+def home_page(driver_ryanair):
+    from pages.ryanair.home_page import HomePage
+    return HomePage(driver_ryanair)
+
+
+@pytest.fixture
+def find_flights_page(driver_ryanair):
+    from pages.ryanair.find_flights_page import FindFlightsPage
+    return FindFlightsPage(driver_ryanair)
+
+
+@pytest.fixture
+def airport_picker_page(driver_ryanair):
+    from pages.ryanair.airport_picker_page import AirportPickerPage
+    return AirportPickerPage(driver_ryanair)
+
+
+@pytest.fixture
+def date_picker_page(driver_ryanair):
+    from pages.ryanair.date_picker_page import DatePickerPage
+    return DatePickerPage(driver_ryanair)
+
+
+@pytest.fixture
+def results_page(driver_ryanair):
+    from pages.ryanair.results_page import RyanairResultsPage
+    return RyanairResultsPage(driver_ryanair)
+
+
 # ── Screenshot on failure ─────────────────────────────────────────────────────
+
+DIAGNOSTICS_DIR = "diagnostics"
+
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """Attach a screenshot to the Allure report whenever a test call phase fails."""
+    """On test-call failure: attach to Allure AND save screenshot + page XML to /diagnostics."""
     outcome = yield
     report = outcome.get_result()
-    if report.failed:
-        driver = item.funcargs.get("driver") or item.funcargs.get("driver_mda")
+
+    if report.when == "call" and report.failed:
+        driver = (
+            item.funcargs.get("driver")
+            or item.funcargs.get("driver_mda")
+            or item.funcargs.get("driver_ryanair")
+        )
         if driver:
+            # ── Allure attachment (existing behaviour) ────────────────────────
+            png_bytes = driver.get_screenshot_as_png()
             allure.attach(
-                driver.get_screenshot_as_png(),
+                png_bytes,
                 name="failure_screenshot",
                 attachment_type=allure.attachment_type.PNG,
             )
+
+            # ── Persist to /diagnostics folder ────────────────────────────────
+            os.makedirs(DIAGNOSTICS_DIR, exist_ok=True)
+            safe_name = item.nodeid.replace("/", "_").replace("::", "__")
+
+            screenshot_path = os.path.join(DIAGNOSTICS_DIR, f"{safe_name}.png")
+            with open(screenshot_path, "wb") as f:
+                f.write(png_bytes)
+
+            xml_path = os.path.join(DIAGNOSTICS_DIR, f"{safe_name}.xml")
+            with open(xml_path, "w", encoding="utf-8") as f:
+                f.write(driver.page_source)
+
+            print(f"\n[diagnostics] screenshot → {screenshot_path}")
+            print(f"[diagnostics] page XML   → {xml_path}")

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from pages.base_page import BasePage
 
 if TYPE_CHECKING:
-    from pages.cart_page import CartPage
+    from pages.shop.cart_page import CartPage
 
 # ── Resource IDs ──────────────────────────────────────────────────────────────
 # Appium prepends appPackage automatically for AppiumBy.ID short IDs.
@@ -53,7 +53,7 @@ class ProductDetailPage(BasePage):
 
     def go_to_cart(self) -> CartPage:
         """Tap the cart icon in the header and return the Cart page."""
-        from pages.cart_page import CartPage
+        from pages.shop.cart_page import CartPage
 
         self._tap(_ID_CART_NAV)
         return CartPage(self._driver)

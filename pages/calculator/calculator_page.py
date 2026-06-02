@@ -3,16 +3,15 @@ from __future__ import annotations
 from pages.base_page import BasePage
 
 # ── Resource IDs ──────────────────────────────────────────────────────────────
-_PKG = "com.google.android.calculator"
-
-_ID_CLR = f"{_PKG}:id/clr"
-_ID_DIGIT = f"{_PKG}:id/digit_"  # append digit 0-9
-_ID_ADD = f"{_PKG}:id/op_add"
-_ID_SUB = f"{_PKG}:id/op_sub"
-_ID_MUL = f"{_PKG}:id/op_mul"
-_ID_DIV = f"{_PKG}:id/op_div"
-_ID_EQ = f"{_PKG}:id/eq"
-_ID_RESULT = f"{_PKG}:id/result_final"
+# Appium prepends appPackage automatically for AppiumBy.ID short IDs.
+_ID_CLR    = "clr"
+_ID_DIGIT  = "digit_"  # append digit 0-9
+_ID_ADD    = "op_add"
+_ID_SUB    = "op_sub"
+_ID_MUL    = "op_mul"
+_ID_DIV    = "op_div"
+_ID_EQ     = "eq"
+_ID_RESULT = "result_final"
 
 
 class CalculatorPage(BasePage):

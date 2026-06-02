@@ -4,7 +4,7 @@ Local smoke tests for Sauce Labs My Demo App — shopping flow.
 BrowserStack blocks uploads of the Sauce Labs demo app (competitor policy).
 This test is marked @local so it is excluded from CI (-m "smoke and not local").
 
-Run locally:  uv run pytest tests/test_shop.py -v
+Run locally:  uv run pytest tests/shop/test_shop.py -v
 """
 
 import pytest
