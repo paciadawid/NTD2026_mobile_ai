@@ -1,0 +1,49 @@
+{
+  "mcpServers": {
+    "mobile-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mobilenext/mobile-mcp@latest"
+      ]
+    },
+    "appium-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "--registry",
+        "https://registry.npmjs.org/",
+        "appium-mcp@latest"
+      ],
+      "env": {
+        "ANDROID_HOME": "${ANDROID_HOME}",
+        "CAPABILITIES_CONFIG": "${workspaceFolder}/capabilities.json"
+      }
+    },
+    "browserstack": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@browserstack/mcp-server@latest"
+      ],
+      "env": {
+        "BROWSERSTACK_USERNAME": "${BROWSERSTACK_USERNAME}",
+        "BROWSERSTACK_ACCESS_KEY": "${BROWSERSTACK_ACCESS_KEY}"
+      }
+    },
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  }
+}
