@@ -84,7 +84,7 @@ test-results/
 test-reports/
 allure-results/
 allure-report/
-*.apk
+# *.apk  # removed to allow committing calculator.apk for CI
 *.aab
 *.ipa
 
