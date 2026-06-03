@@ -25,3 +25,7 @@ class BasePage:
     def _get_text(self, locator: tuple[str, str]) -> str:
         """Wait for *locator* to be visible and return its text."""
         return self._wait.until(EC.visibility_of_element_located(locator)).text
+
+    def _go_back(self) -> None:
+        """Press the Android back button."""
+        self.driver.back()

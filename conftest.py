@@ -15,6 +15,7 @@ from capabilities.real_device import build_real_device_caps
 load_dotenv()
 
 SCREENSHOT_DIR = Path("reports/screenshots")
+DIAGNOSTICS_DIR = Path("diagnostics")
 
 _BUILDERS = {
     "emulator": lambda app_path, name: build_emulator_caps(app_path),
@@ -54,19 +55,36 @@ def _build_caps(target: str, app_path: str, session_name: str) -> UiAutomator2Op
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo) -> Generator[None, None, None]:
-    """Capture a screenshot and attach it to the Allure report on any test failure."""
+    """Capture a screenshot and page source on any test failure.
+
+    Artifacts are written to two locations:
+      - reports/screenshots/<safe_name>.png   — screenshot for Allure
+      - diagnostics/<safe_name>.png           — screenshot for quick inspection
+      - diagnostics/<safe_name>.xml           — driver.page_source for DOM debugging
+    The screenshot is also attached inline to the Allure report.
+    """
     outcome = yield
     report = outcome.get_result()
     if report.when == "call" and report.failed:
         driver = item.funcargs.get("driver")
         if driver:
-            SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
             safe_name = item.nodeid.replace("/", "_").replace("::", "_")
+
+            # ── Allure screenshot (reports/screenshots/) ──────────────────────
+            SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
             driver.get_screenshot_as_file(str(SCREENSHOT_DIR / f"{safe_name}.png"))
+            screenshot_bytes = driver.get_screenshot_as_png()
             allure.attach(
-                driver.get_screenshot_as_png(),
+                screenshot_bytes,
                 name=safe_name,
                 attachment_type=allure.attachment_type.PNG,
+            )
+
+            # ── Diagnostics artifacts (diagnostics/) ──────────────────────────
+            DIAGNOSTICS_DIR.mkdir(parents=True, exist_ok=True)
+            (DIAGNOSTICS_DIR / f"{safe_name}.png").write_bytes(screenshot_bytes)
+            (DIAGNOSTICS_DIR / f"{safe_name}.xml").write_text(
+                driver.page_source, encoding="utf-8"
             )
 
 

@@ -39,6 +39,7 @@ reports/             # allure output directory (gitignored)
 - Add a **blank line** between each test function and between Page Object methods
 - All public functions, methods, and fixtures must have **type annotations**
 - Imports order: standard library, then third-party, then local
+- Do **not** add inline comments that restate what the code already says — well-named methods and variables are self-documenting; only add a comment when it explains *why*, not *what*
 
 ## What NOT to do
 - Do not use driver.find_element_by_* (deprecated Appium 1 API)

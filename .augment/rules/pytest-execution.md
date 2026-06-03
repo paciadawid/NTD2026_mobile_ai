@@ -18,6 +18,10 @@ markers = [
 ]
 ```
 
+## Emulator test runs
+- **Never rerun a test against the emulator if it already passed in the current session.** Each emulator run spins up a full Appium session (~20–30 s); rerunning a green test wastes time and risks leaving a stale session.
+- Only rerun an emulator test when there is an actual code change that could affect its outcome.
+
 ## Retries
 - Use **`pytest-rerunfailures`** to automatically retry flaky tests
 - Configure retries in `pyproject.toml` so they apply to every `pytest` invocation without extra CLI flags:

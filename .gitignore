@@ -76,6 +76,7 @@ Desktop.ini
 logs/
 
 # --- Appium / mobile testing artifacts ---
+diagnostics/
 appium.log
 appium-*.log
 reports/

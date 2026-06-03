@@ -10,6 +10,7 @@ description: Rules for Appium driver setup, Android capabilities, driver lifecyc
 - **Before any implementation**, navigate through the full UI path that the test will follow — tap through every screen and state transition — then retrieve the page source at each step to discover resource-ids and content-descs.
 - Use Appium MCP to retrieve the page source, find resource-ids, content-descs, and verify element availability at runtime.
 - Prefer locators discovered via Appium MCP over guessed or assumed values — the live source reflects the actual app state.
+- **When any MCP-driven implementation step fails or produces unexpected behaviour, immediately dump `driver.page_source` to `diagnostics/<context>.xml`** for fast offline inspection — do not guess or retry blindly without first reading the live DOM.
 
 ## Stack
 - **Language**: Python 3.9+
