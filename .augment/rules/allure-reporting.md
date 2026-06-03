@@ -1,5 +1,6 @@
 ---
-type: always
+type: auto
+description: Rules for Allure reporting setup, screenshot-on-failure hook, and attaching artifacts. Apply when editing conftest.py, adding or modifying the pytest_runtest_makereport hook, or configuring allure-pytest.
 ---
 
 # Allure Reporting Rules

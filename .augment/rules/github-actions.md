@@ -1,5 +1,6 @@
 ---
-type: always
+type: auto
+description: Rules for GitHub Actions CI workflows — env setup, BrowserStack test job, Allure artifact upload, and GitHub Pages publishing. Apply when editing .github/workflows/ files.
 ---
 
 # GitHub Actions CI Rules

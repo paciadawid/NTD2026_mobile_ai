@@ -1,5 +1,6 @@
 ---
-type: always
+type: auto
+description: Rules for Appium driver setup, Android capabilities, driver lifecycle, and explicit waits. Apply when creating or editing capability builders, conftest driver fixtures, or any code that initialises a WebDriver session.
 ---
 
 # Appium Driver Rules

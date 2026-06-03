@@ -1,5 +1,6 @@
 ---
-type: always
+type: auto
+description: Rules for the Page Object Model pattern — BasePage, locator strategy, and interaction helpers. Apply when creating or editing any class in pages/, adding new locators, or implementing screen interactions.
 ---
 
 # Page Object Model Rules

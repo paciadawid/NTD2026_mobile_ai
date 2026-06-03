@@ -1,5 +1,6 @@
 ---
-type: always
+type: auto
+description: Rules for pytest markers, test retries, and parallel execution. Apply when editing pyproject.toml, adding new test markers, configuring pytest-rerunfailures or pytest-xdist, or writing pytest command invocations.
 ---
 
 # Pytest Execution Rules
