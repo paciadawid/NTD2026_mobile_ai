@@ -22,7 +22,7 @@ A Python/Appium framework for Android UI test automation, built for the **NTD 20
 | Python | 3.9+ (3.14 recommended) | |
 | Node.js | 24 LTS | Required by Appium and MCP servers |
 | Java JDK | 25 LTS | Set `JAVA_HOME` |
-| Android Studio | Latest | Set `ANDROID_HOME`; create an API 36 AVD |
+| Android Studio | Latest | Set `ANDROID_HOME`; create a Pixel 9 AVD (Android 15.0) |
 | Appium | 3.x | `npm i -g appium@latest` |
 | UiAutomator2 driver | Latest | `appium driver install uiautomator2` |
 | uv | Latest | Python package manager used in this project |
@@ -61,7 +61,7 @@ cp .env.example .env
 | `APPIUM_HOST` | ✅ Always | Appium server host (default `127.0.0.1`) |
 | `APPIUM_PORT` | ✅ Always | Appium server port (default `4723`) |
 | `WAIT_TIMEOUT` | ✅ Always | Explicit wait timeout in seconds (default `10`) |
-| `AVD_NAME` | When `TARGET=emulator` | Name of the Android Virtual Device (e.g. `Pixel_7_API_34`) |
+| `AVD_NAME` | When `TARGET=emulator` | Name of the Android Virtual Device (e.g. `Pixel_9_2`) |
 | `DEVICE_UDID` | When `TARGET=real_device` | `adb devices` output |
 | `DEVICE_NAME` | When `TARGET=real_device` | Human-readable device name |
 | `BS_USERNAME` | When `TARGET=browserstack` | BrowserStack account username |
@@ -93,6 +93,9 @@ uv run pytest -m regression
 # Different target
 TARGET=browserstack uv run pytest
 
+# BrowserStack with 5 parallel workers
+TARGET=browserstack uv run pytest tests/ -v --tb=short --alluredir=reports/allure-results -n 5
+
 # With Allure report generation
 uv run pytest tests/ -v --alluredir=reports/allure-results
 allure serve reports/allure-results
@@ -109,6 +112,12 @@ Test runner. Fixtures, markers, and plugins are configured in `pyproject.toml`. 
 
 ### Appium 3 + UiAutomator2
 Drives Android apps over the W3C WebDriver protocol. `UiAutomator2` is Google's on-device automation engine — it understands native Android UI elements without requiring app-source access.
+
+### pytest-rerunfailures
+Automatically retries flaky tests. Configured in `pyproject.toml` (`reruns = 2`, `reruns_delay = 5`) so no extra CLI flags are needed — every run gets up to 2 retries with a 5-second pause between attempts.
+
+### pytest-xdist
+Parallel test execution. Use `-n 5` when targeting BrowserStack in CI to run 5 tests concurrently across BrowserStack devices. Not set globally in `pyproject.toml` to keep local emulator runs single-threaded.
 
 ### Allure
 Rich HTML reporting (`allure-pytest`). Screenshots captured on test failure are automatically attached to the relevant Allure step.
