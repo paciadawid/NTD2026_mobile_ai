@@ -7,6 +7,9 @@ on:
     branches: [master]
     types: [opened, synchronize, reopened]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   lint:
     name: Code check (ruff)
