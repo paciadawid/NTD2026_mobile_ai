@@ -59,7 +59,7 @@ jobs:
           echo "BROWSERSTACK_APP_URL=$BS_URL" >> "$GITHUB_ENV"
 
       - name: Run tests
-        run: uv run pytest tests/ -v --tb=short --alluredir=reports/allure-results
+        run: uv run pytest tests/ -v --tb=short --alluredir=reports/allure-results -n 5
 
       - name: Upload Allure results
         if: always()
