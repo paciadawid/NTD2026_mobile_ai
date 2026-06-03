@@ -120,10 +120,17 @@ allure serve reports/allure-results
 ```
 
 **In CI (GitHub Actions):**
-Allure results are uploaded automatically as a GitHub Actions artifact named `allure-results-<run_number>` after every run (including failed runs). To inspect a CI run locally:
-1. Go to the GitHub Actions run page
-2. Download the `allure-results-<run_number>` artifact
-3. Unzip and run: `allure serve <path-to-unzipped-artifact>`
+After every run the report is published to GitHub Pages and the raw results are kept as a downloadable artifact.
+
+| Resource | URL |
+|---|---|
+| **Live report** | https://paciadawid.github.io/NTD2026_mobile_ai/ |
+| **Raw artifact** | GitHub Actions run → `allure-results-<run_number>` (kept 30 days) |
+
+To inspect a specific CI run locally, download the artifact and run:
+```sh
+allure serve <path-to-unzipped-artifact>
+```
 
 ### BrowserStack Automate
 Cloud device farm for running tests on real devices without local hardware. Enabled by setting `TARGET=browserstack` and providing credentials in `.env`. Session recordings, network logs, and debug screenshots are enabled automatically.
