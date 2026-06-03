@@ -16,8 +16,8 @@ def build_browserstack_caps(app_path: str, session_name: str = "NTD2026 Test") -
     options.app = (
         bs_app_url if bs_app_url else (app_path if app_path.startswith("bs://") else str(Path(app_path).resolve()))
     )
-    options.device_name = os.getenv("BROWSERSTACK_DEVICE", "Google Pixel 7")
-    options.platform_version = os.getenv("BROWSERSTACK_OS_VERSION", "13.0")
+    options.device_name = os.getenv("BROWSERSTACK_DEVICE", "Google Pixel 9")
+    options.platform_version = os.getenv("BROWSERSTACK_OS_VERSION", "15.0")
     options.set_capability(
         "bstack:options",
         {
