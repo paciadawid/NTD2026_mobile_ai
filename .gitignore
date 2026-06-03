@@ -76,14 +76,16 @@ Desktop.ini
 logs/
 
 # --- Appium / mobile testing artifacts ---
+diagnostics/
 appium.log
 appium-*.log
+reports/
 screenshots/
 test-results/
 test-reports/
 allure-results/
 allure-report/
-*.apk
+# *.apk  # removed to allow committing calculator.apk for CI
 *.aab
 *.ipa
 
