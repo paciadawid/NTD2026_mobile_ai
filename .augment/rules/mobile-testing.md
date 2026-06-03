@@ -112,8 +112,8 @@ def pytest_runtest_makereport(item, call):
 
 ## Reporting
 - Use **Allure** (`allure-pytest`) as the reporting framework
-- Run tests with `--alluredir=reports/allure-results` to generate raw results
-- Serve the report with `allure serve reports/allure-results`
+- Always pass `--alluredir=reports/allure-results` when running pytest — locally and in CI
+- Serve the report locally with `allure serve reports/allure-results`
 - Attach screenshots to the Allure report inside the failure hook using `allure.attach()`
 - The `reports/` directory is gitignored; never commit generated reports
 
@@ -126,6 +126,31 @@ allure.attach(
     name=safe_name,
     attachment_type=allure.attachment_type.PNG,
 )
+```
+
+### GitHub Actions
+- Always upload Allure results as a GitHub Actions artifact after the test step
+- Use `if: always()` so results are uploaded even when tests fail
+- Name the artifact `allure-results-${{ github.run_number }}` for traceability
+- Set `retention-days: 30` to keep results without bloating storage indefinitely
+- Use the latest `actions/upload-artifact` (currently `v7`)
+
+```yaml
+- name: Run tests
+  run: uv run pytest tests/ -v --tb=short --alluredir=reports/allure-results
+
+- name: Upload Allure results
+  if: always()
+  uses: actions/upload-artifact@v7
+  with:
+    name: allure-results-${{ github.run_number }}
+    path: reports/allure-results/
+    retention-days: 30
+```
+
+To inspect a CI run locally, download the artifact from the GitHub Actions run page and run:
+```sh
+allure serve <path-to-downloaded-and-unzipped-artifact>
 ```
 
 ## Page Object Model

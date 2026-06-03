@@ -94,7 +94,7 @@ uv run pytest -m regression
 TARGET=browserstack uv run pytest
 
 # With Allure report generation
-uv run pytest --alluredir=reports/allure-results
+uv run pytest tests/ -v --alluredir=reports/allure-results
 allure serve reports/allure-results
 ```
 
@@ -111,7 +111,19 @@ Test runner. Fixtures, markers, and plugins are configured in `pyproject.toml`. 
 Drives Android apps over the W3C WebDriver protocol. `UiAutomator2` is Google's on-device automation engine — it understands native Android UI elements without requiring app-source access.
 
 ### Allure
-Rich HTML reporting (`allure-pytest`). Screenshots captured on test failure are automatically attached to the relevant Allure step. Run `allure serve reports/allure-results` after a test run.
+Rich HTML reporting (`allure-pytest`). Screenshots captured on test failure are automatically attached to the relevant Allure step.
+
+**Locally:**
+```sh
+uv run pytest tests/ -v --alluredir=reports/allure-results
+allure serve reports/allure-results
+```
+
+**In CI (GitHub Actions):**
+Allure results are uploaded automatically as a GitHub Actions artifact named `allure-results-<run_number>` after every run (including failed runs). To inspect a CI run locally:
+1. Go to the GitHub Actions run page
+2. Download the `allure-results-<run_number>` artifact
+3. Unzip and run: `allure serve <path-to-unzipped-artifact>`
 
 ### BrowserStack Automate
 Cloud device farm for running tests on real devices without local hardware. Enabled by setting `TARGET=browserstack` and providing credentials in `.env`. Session recordings, network logs, and debug screenshots are enabled automatically.
