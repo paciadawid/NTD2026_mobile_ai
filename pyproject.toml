@@ -10,6 +10,7 @@ dependencies = [
 dev = [
     "allure-pytest>=2.16.0",
     "pytest>=8.4.2",
+    "pytest-rerunfailures>=16.0.1",
     "ruff>=0.15.15",
 ]
 
@@ -23,6 +24,8 @@ select = ["E", "W", "F", "I", "UP"]
 ignore = []
 
 [tool.pytest.ini_options]
+reruns = 2
+reruns_delay = 5
 markers = [
     "emulator: tests that run on Android emulators",
     "real_device: tests that run on physical Android devices",
