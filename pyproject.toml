@@ -2,4 +2,35 @@
 name = "ntd2026-mobile-ai"
 version = "0.1.0"
 requires-python = ">=3.9"
-dependencies = []
+dependencies = [
+    "appium-python-client>=5.3.1",
+    "python-dotenv>=1.2.1",
+]
+[dependency-groups]
+dev = [
+    "allure-pytest>=2.16.0",
+    "pytest>=8.4.2",
+    "ruff>=0.15.15",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+# E/W = pycodestyle, F = Pyflakes, I = isort, UP = pyupgrade
+select = ["E", "W", "F", "I", "UP"]
+ignore = []
+
+[tool.pytest.ini_options]
+markers = [
+    "emulator: tests that run on Android emulators",
+    "real_device: tests that run on physical Android devices",
+    "browserstack: tests that execute on BrowserStack",
+    "smoke: quick sanity suite",
+    "regression: full regression suite",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

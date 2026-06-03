@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "appium-mcp": {
+      "command": "npx",
+      "args": ["appium-mcp@latest"],
+      "env": {
+        "ANDROID_HOME": "${ANDROID_HOME}",
+        "APPIUM_HOST": "${APPIUM_HOST}",
+        "APPIUM_PORT": "${APPIUM_PORT}",
+        "CAPABILITIES_CONFIG": "${CAPABILITIES_CONFIG}"
+      }
+    },
+    "browserstack": {
+      "command": "npx",
+      "args": ["-y", "@browserstack/mcp-server@latest"],
+      "env": {
+        "BROWSERSTACK_USERNAME": "${BROWSERSTACK_USERNAME}",
+        "BROWSERSTACK_ACCESS_KEY": "${BROWSERSTACK_ACCESS_KEY}"
+      }
+    },
+    "github": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "ghcr.io/github/github-mcp-server"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  }
+}

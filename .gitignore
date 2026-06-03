@@ -78,6 +78,7 @@ logs/
 # --- Appium / mobile testing artifacts ---
 appium.log
 appium-*.log
+reports/
 screenshots/
 test-results/
 test-reports/
